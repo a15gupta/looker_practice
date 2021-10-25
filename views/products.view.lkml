@@ -12,6 +12,16 @@ view: products {
   dimension: brand {
     type: string
     sql: ${TABLE}."BRAND" ;;
+    link: {
+      label: "Visit Brand's Website"
+      url: "https://www.google.com/search?q={{value}}"
+      icon_url: "http://google.com/favicon.ico"
+    }
+    link: {
+      label: "Visit Brand's Facebook Page"
+      url: "https://www.facebook.com/{{value}}/"
+      icon_url: "http://www.facebook.com/favicon.ico"
+    }
   }
 
   dimension: category {

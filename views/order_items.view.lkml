@@ -131,6 +131,11 @@ view: order_items {
     sql: ${sale_price} ;;
     filters: [is_cancelled_returned: "No"]
     value_format_name: usd
+    drill_fields: [
+      products.brand,
+      products.category,
+      products.name
+      ]
   }
 
   measure: average_gross_revenue {
@@ -197,7 +202,7 @@ view: order_items {
     type: number
     sql: 1.0*(${total_sale_price})/NULLIF(${count_user},0) ;;
     value_format_name: usd
-    drill_fields: [user_id,users.age_tier,users.gender]
+    drill_fields: [user_id,users.age_tier,users.age,users.gender]
   }
 
   measure: order_count {

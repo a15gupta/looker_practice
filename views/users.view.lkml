@@ -18,7 +18,7 @@ view: users {
     type: tier
     tiers: [15,26,36,51,66]
     sql: ${age} ;;
-    style: interval
+    style: classic
   }
 
   dimension: city {
@@ -78,7 +78,14 @@ view: users {
 
   dimension: state {
     type: string
+    map_layer_name: us_states
     sql: ${TABLE}."STATE" ;;
+  }
+
+  dimension: new_location {
+    type: location
+    sql_latitude: ${latitude} ;;
+    sql_longitude: ${longitude} ;;
   }
 
   dimension: traffic_source {

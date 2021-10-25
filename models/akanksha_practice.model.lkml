@@ -71,3 +71,11 @@ explore: products {
 }
 
 explore: users {}
+
+explore: customers_orders {
+  join: users {
+    type: left_outer
+    sql_on: ${customers_orders.user_id} = ${users.id} ;;
+    relationship: many_to_one
+}
+}

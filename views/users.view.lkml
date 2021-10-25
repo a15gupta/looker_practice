@@ -84,6 +84,33 @@ view: users {
     sql: ${TABLE}."ZIP" ;;
   }
 
+  dimension: days_enrolled {
+    hidden: yes
+    type: duration_day
+    sql_start: ${created_raw} ;;
+    sql_end: current_timestamp() ;;
+  }
+
+  dimension: is_new_user {
+    type: yesno
+    sql: ${days_enrolled} <90 ;;
+  }
+
+  dimension: is_before_mtd {
+    type: yesno
+    sql:
+    DAY(${created_raw}<day(current_timestamp())
+    OR
+    (DAY(${created_raw})<day(current_timestamp()) and
+    hour(${created_raw})<hour (current_timestamp()))
+    or
+    (DAY(${created_raw})<day(current_timestamp()) and
+    hour(${created_raw})<hour (current_timestamp())
+    minute(${created_raw})<minute (current_timestamp()))
+    ;;
+  }
+
+
   measure: count {
     type: count
     drill_fields: [id, last_name, first_name, events.count, order_items.count]

@@ -1,6 +1,5 @@
 view: order_items {
-  sql_table_name: "PUBLIC"."ORDER_ITEMS"
-    ;;
+  sql_table_name: "PUBLIC"."ORDER_ITEMS";;
   drill_fields: [id]
 
   dimension: id {
@@ -97,6 +96,11 @@ view: order_items {
     sql: ${status} = 'Cancelled' or ${status} = 'Returned' ;;
   }
 
+  dimension: is_returned {
+    type: yesno
+    sql: ${returned_raw} is not null ;;
+  }
+
   measure: count {
     type: count
     drill_fields: [detail*]
@@ -118,7 +122,7 @@ view: order_items {
 
   measure: cumulative_total_sale {
     type: running_total
-    sql: ${sale_price} ;;
+    sql: ${total_gross_revenue} ;;
     value_format_name: usd
   }
 
@@ -126,6 +130,74 @@ view: order_items {
     type: sum
     sql: ${sale_price} ;;
     filters: [is_cancelled_returned: "No"]
+    value_format_name: usd
+  }
+
+  measure: total_gross_margin_amount {
+    type: number
+    sql: ${total_gross_revenue} - ${inventory_items.total_cost};;
+    value_format_name: usd
+  }
+
+  measure: average_gross_margin {
+    type: number
+    sql:  ${total_gross_margin_amount};;
+    value_format_name: usd
+  }
+
+  measure: gross_margin_per {
+    type: number
+    sql: ${total_gross_margin_amount}/NULLIF(${total_gross_revenue},0) ;;
+    value_format_name: percent_1
+  }
+
+  measure: count_returned_items {
+    type: count_distinct
+    sql: ${id};;
+    filters: [is_returned: "Yes"]
+  }
+
+  measure: item_return_rate {
+    type: number
+    sql: ${count_returned_items}/${count} ;;
+    value_format_name: percent_1
+  }
+
+  measure: count_users_returning_items {
+    type: count_distinct
+    sql: ${user_id} ;;
+    filters: [is_returned: "Yes"]
+  }
+
+  measure: count_user {
+    type: count_distinct
+    sql: ${user_id} ;;
+  }
+
+  measure: returned_users_per {
+    type: number
+    sql: 1.0*(${count_users_returning_items})/NULLIF( ${count_user},0);;
+  }
+
+  measure: average_spend_per_customer {
+    type: number
+    sql: 1.0*(${total_sale_price})/NULLIF(${count_user},0) ;;
+    value_format_name: usd
+  }
+
+  measure: order_count {
+    type: count_distinct
+    sql: ${id} ;;
+  }
+
+  measure: first_order {
+    type: date
+    sql: min(${created_raw}) ;;
+  }
+
+  measure: last_order {
+    type: date
+    sql: max(${created_raw}) ;;
   }
 
   #####end

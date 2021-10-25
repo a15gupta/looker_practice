@@ -133,6 +133,19 @@ view: order_items {
     value_format_name: usd
   }
 
+  measure: average_gross_revenue {
+    type: average
+    sql: ${sale_price} ;;
+    filters: [is_cancelled_returned: "No"]
+    value_format_name: usd
+  }
+
+  measure: MTD_Total_Revenue {
+    type:  sum
+    sql: ${sale_price} ;;
+
+  }
+
   measure: total_gross_margin_amount {
     type: number
     sql: ${total_gross_revenue} - ${inventory_items.total_cost};;
@@ -141,8 +154,9 @@ view: order_items {
 
   measure: average_gross_margin {
     type: number
-    sql:  ${total_gross_margin_amount};;
+    sql:  ${average_gross_revenue}-${average_sale_price};;
     value_format_name: usd
+    #filters: [is_cancelled_returned: "No"]
   }
 
   measure: gross_margin_per {
@@ -183,6 +197,7 @@ view: order_items {
     type: number
     sql: 1.0*(${total_sale_price})/NULLIF(${count_user},0) ;;
     value_format_name: usd
+    drill_fields: [user_id,users.age_tier,users.gender]
   }
 
   measure: order_count {

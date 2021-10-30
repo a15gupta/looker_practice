@@ -2,6 +2,10 @@ view: events {
   sql_table_name: "PUBLIC"."EVENTS"
     ;;
   drill_fields: [id]
+  filter: countries {
+    type: string
+    suggest_dimension: country
+  }
 
   dimension: id {
     primary_key: yes

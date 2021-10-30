@@ -73,9 +73,42 @@ explore: products {
 explore: users {}
 
 explore: customers_orders {
+  label: "Consumer Analysis"
   join: users {
     type: left_outer
     sql_on: ${customers_orders.user_id} = ${users.id} ;;
     relationship: many_to_one
+  }
+  join: order_items {
+    type: left_outer
+    sql_on: ${customers_orders.user_id} = ${order_items.user_id} ;;
+    relationship: one_to_many
+  }
+  join: inventory_items {
+    type: left_outer
+    sql_on: ${inventory_items.id} = ${order_items.inventory_item_id} ;;
+    relationship: one_to_many
+  }
 }
+
+explore: usecase3 {
+  join: users {
+    type: left_outer
+    sql_on: ${usecase3.user_id}=${users.id} ;;
+    relationship: many_to_one
+  }
+}
+
+explore: usecase4 {
+  view_name: products
+  join: inventory_items {
+    sql_on: ${products.id}=${inventory_items.product_id};;
+    type: left_outer
+    relationship: one_to_many
+  }
+  join: order_items {
+    sql_on: ${inventory_items.id}}=${order_items.inventory_item_id}};;
+    type: left_outer
+    relationship: one_to_many
+  }
 }

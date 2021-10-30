@@ -220,6 +220,25 @@ view: order_items {
     sql: max(${created_raw}) ;;
   }
 
+
+####key use case 3###
+  measure: order_sequence {
+    type: number
+    sql: ROW_NUMBER() OVER(partition by ${user_id} order by ${created_date});;
+  }
+
+  # dimension: is_repeat_customer {
+  #   type: yesno
+  #   sql: ${first_order}<>${last_order} ;;
+  # }
+
+  # measure: count_repeat_customers {
+  #   type: count_distinct
+  #   sql: ${user_id} ;;
+  #   filters: [is_repeat_customer: "Yes"]
+
+  # }
+
   #####end
 
   # ----- Sets of fields for drilling ------

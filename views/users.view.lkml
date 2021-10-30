@@ -18,7 +18,7 @@ view: users {
     type: tier
     tiers: [15,26,36,51,66]
     sql: ${age} ;;
-    style: classic
+    style: integer
   }
 
   dimension: city {
@@ -124,9 +124,38 @@ view: users {
     ;;
   }
 
+###########cohort Analysis#############
+  dimension: days_since_enrolled {
+    #hidden: yes
+    type: duration_day
+    sql_start: ${created_raw} ;;
+    sql_end: current_timestamp() ;;
+  }
+
+  dimension: months_since_enrolled {
+    #hidden: yes
+    type: duration_month
+    sql_start: ${created_raw} ;;
+    sql_end: current_timestamp() ;;
+  }
+
+  measure: average_days_since_signup {
+    type: average
+    sql: ${days_since_enrolled} ;;
+  }
+
+  measure: average_months_since_signup {
+    type: average
+    sql: ${months_since_enrolled} ;;
+  }
+
+
+  #########END############
 
   measure: count {
     type: count
     drill_fields: [id, last_name, first_name, events.count, order_items.count]
   }
+
+
 }

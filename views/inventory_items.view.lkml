@@ -29,8 +29,11 @@ view: inventory_items {
   }
 
   dimension: product_brand {
-    type: string
+    type: number
     sql: ${TABLE}."PRODUCT_BRAND" ;;
+    link: {
+      url: "https://joonpartner.cloud.looker.com/dashboards-next/19"
+    }
   }
 
   dimension: product_category {
@@ -49,7 +52,7 @@ view: inventory_items {
   }
 
   dimension: product_id {
-    type: number
+    type: string
     # hidden: yes
     sql: ${TABLE}."PRODUCT_ID" ;;
   }

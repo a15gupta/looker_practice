@@ -20,6 +20,9 @@ view: customers_orders {
       column: lifetime_revenue {
         field: order_items.total_gross_revenue
       }
+      column: order_id {
+        field: order_items.order_id
+      }
     }
     }
     dimension: user_id {
@@ -28,7 +31,7 @@ view: customers_orders {
       sql: ${TABLE}.user_id ;;
     }
 
-    dimension: total_lifetime_orders {
+    dimension: lifetime_orders {
       type: number
       sql: ${TABLE}.lifetime_orders  ;;
     }
@@ -36,32 +39,37 @@ view: customers_orders {
     dimension: lifetime_orders_tier {
       type: bin
       tiers: [1,2,3,6,10]
-      sql: ${total_lifetime_orders} ;;
+      sql: ${lifetime_orders} ;;
       style: integer
     }
 
-    dimension: total_lifetime_value {
+    dimension: lifetime_value {
       type: number
       sql: ${TABLE}.lifetime_value  ;;
     }
 
-    dimension: lifetime_value_tier {
+    dimension: lifetime_revenue {
+      type: number
+      sql: ${TABLE}.lifetime_revenue  ;;
+    }
+
+    dimension: lifetime_revenue_tier {
       type: tier
       tiers: [0,5,20,50,100,500,1000]
-      sql: ${total_lifetime_revenue} ;;
+      sql: ${lifetime_revenue} ;;
       style: integer
       value_format_name: usd
     }
-
-  dimension: total_lifetime_revenue {
-    type: number
-    sql: ${TABLE}.lifetime_revenue  ;;
-  }
 
     dimension: first_order {
       type:  date
       sql: ${TABLE}.first_order  ;;
     }
+
+  dimension: order_id {
+    type:  number
+    sql: ${TABLE}.order_id  ;;
+  }
 
     dimension: last_order {
       type:  date
@@ -77,7 +85,7 @@ view: customers_orders {
 
     dimension: is_repeat_customer {
       type:  yesno
-      sql: ${total_lifetime_orders}>1 ;;
+      sql: ${lifetime_orders}>1 ;;
     }
 
     dimension: is_active {
@@ -94,15 +102,25 @@ view: customers_orders {
       sql: ${user_id} ;;
     }
 
+    measure:total_lifetime_orders  {
+      type: sum
+      sql:  ${lifetime_orders};;
+    }
+
+    measure:total_lifetime_revenue  {
+      type: sum
+      sql:  ${lifetime_orders};;
+    }
+
     measure: average_lifetime_orders {
       type: number
-      sql: SUM(${total_lifetime_orders})/${unique_users} ;;
+      sql: ${total_lifetime_orders}/${unique_users} ;;
       value_format_name: usd
     }
 
     measure: average_lifetime_revenue {
       type: number
-      sql: SUM(${total_lifetime_revenue})/${unique_users} ;;
+      sql: ${total_lifetime_revenue}/${unique_users} ;;
       value_format_name: usd
     }
 
@@ -110,5 +128,29 @@ view: customers_orders {
       type: number
       sql: SUM(${days_since_last_purchase})/ ${unique_users};;
     }
+
+    measure: unique_repeat_customer {
+      type: count_distinct
+      #hidden: yes
+      sql:  ${user_id};;
+      filters: [is_repeat_customer: "Yes"]
+    }
+
+    measure: order_count {
+      type: count_distinct
+      sql: ${order_id} ;;
+    }
+
+    measure: repeat_costumer_count_order {
+      type: count_distinct
+      sql: ${order_id} ;;
+      filters: [is_repeat_customer: "Yes"]
+    }
+
+    # measure: repeat_customer_percent {
+    #   type: number
+    #   sql: ${unique_repeat_customer}/${unique_users} ;;
+    #   value_format_name: percent_1
+    # }
 
   }
